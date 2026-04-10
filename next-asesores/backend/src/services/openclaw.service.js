@@ -1,9 +1,5 @@
-const https = require('https');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: f }) => f(...args));
-
-// Agente que acepta certificados autofirmados (comunicación interna VPS)
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 async function sendToOpenClaw(tipo, data) {
   const webhookUrl = process.env.OPENCLAW_ASESORIA_WEBHOOK_URL;
@@ -20,7 +16,6 @@ async function sendToOpenClaw(tipo, data) {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify(payload),
-    agent:   httpsAgent,
   });
 
   const json = await response.json().catch(() => ({}));
