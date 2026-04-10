@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 
-const NAV_LINKS = [
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Áreas', href: '#areas' },
-  { label: 'Nosotros', href: '#nosotros' },
-  { label: 'Noticias', href: '#noticias' },
-];
-
 export default function Header() {
   const [open, setOpen] = useState(false);
 
@@ -25,21 +18,8 @@ export default function Header() {
             />
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden lg:flex items-center gap-8">
-            {NAV_LINKS.map(({ label, href }) => (
-              <a
-                key={label}
-                href={href}
-                className="text-xs font-semibold tracking-widest uppercase text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                {label}
-              </a>
-            ))}
-          </div>
-
           {/* Desktop CTAs */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-3">
             <NavLink
               to="/calendario"
               className={({ isActive }) =>
@@ -68,7 +48,7 @@ export default function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="lg:hidden p-2 text-on-surface-variant hover:text-on-surface transition-colors"
+            className="sm:hidden p-2 text-on-surface-variant hover:text-on-surface transition-colors"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           >
@@ -86,33 +66,21 @@ export default function Header() {
 
         {/* Mobile menu */}
         {open && (
-          <div className="lg:hidden pb-5 flex flex-col gap-1 border-t border-outline-variant/10 mt-1 pt-4">
-            {NAV_LINKS.map(({ label, href }) => (
-              <a
-                key={label}
-                href={href}
-                onClick={() => setOpen(false)}
-                className="px-2 py-2.5 text-xs font-semibold tracking-widest uppercase text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                {label}
-              </a>
-            ))}
-            <div className="flex flex-col gap-2 mt-3">
-              <NavLink
-                to="/calendario"
-                onClick={() => setOpen(false)}
-                className="btn-secondary text-center text-xs py-3"
-              >
-                Calendario
-              </NavLink>
-              <NavLink
-                to="/contacto"
-                onClick={() => setOpen(false)}
-                className="btn-primary text-center text-xs py-3"
-              >
-                Cita previa
-              </NavLink>
-            </div>
+          <div className="sm:hidden pb-4 flex flex-col gap-2 border-t border-outline-variant/10 pt-4">
+            <NavLink
+              to="/calendario"
+              onClick={() => setOpen(false)}
+              className="btn-secondary text-center text-xs py-3"
+            >
+              Calendario
+            </NavLink>
+            <NavLink
+              to="/contacto"
+              onClick={() => setOpen(false)}
+              className="btn-primary text-center text-xs py-3"
+            >
+              Cita previa
+            </NavLink>
           </div>
         )}
       </nav>
