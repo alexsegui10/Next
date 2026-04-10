@@ -6,15 +6,18 @@ const webhookRoutes = require('./routes/webhook.routes');
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL]
-  : ['http://localhost:5174'];
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (origin.endsWith('.vercel.app')) return true;
+  if (origin === 'http://localhost:5174') return true;
+  if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return true;
+  return false;
+}
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // server-to-server / curl
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (isAllowedOrigin(origin)) return callback(null, true);
       callback(new Error(`CORS: origin '${origin}' not allowed`));
     },
     methods: ['GET', 'POST', 'OPTIONS'],
