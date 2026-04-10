@@ -1,35 +1,26 @@
+const https = require('https');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: f }) => f(...args));
 
-function buildPayload(tipo, data) {
-  const normalizedFechaHora = (() => {
-    if (data.fecha && data.hora) return `${data.fecha} ${data.hora}`;
-    if (data.fecha_hora) return String(data.fecha_hora).replace('T', ' ');
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  })();
-
-  return {
-    tipo: `FORMULARIO_${String(tipo).toUpperCase()}`,
-    nombre: data.nombre,
-    email: data.email,
-    telefono: data.telefono,
-    fecha_hora: normalizedFechaHora,
-    duracion_min: 60,
-    descripcion: data.descripcion || '-',
-  };
-}
+// Agente que acepta certificados autofirmados (comunicación interna VPS)
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 async function sendToOpenClaw(tipo, data) {
   const webhookUrl = process.env.OPENCLAW_ASESORIA_WEBHOOK_URL;
   if (!webhookUrl) throw new Error('Falta OPENCLAW_ASESORIA_WEBHOOK_URL en variables de entorno');
 
-  const payload = buildPayload(tipo, data);
+  const payload = {
+    nombre:   data.nombre,
+    email:    data.email,
+    telefono: data.telefono,
+    tipo,
+  };
 
   const response = await fetch(webhookUrl, {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body:    JSON.stringify(payload),
+    agent:   httpsAgent,
   });
 
   const json = await response.json().catch(() => ({}));
